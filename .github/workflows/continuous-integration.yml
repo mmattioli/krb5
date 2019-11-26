@@ -1,0 +1,26 @@
+name: Continuous integration tests
+
+on: push
+
+strategy:
+    matrix:
+        include:
+            - compiler: clang
+              env:
+                MAKEVARS: CPPFLAGS=-Werror
+            - compiler: clang
+              env:
+                MAKEVARS: CPPFLAGS=-Werror
+                CONFIGURE_OPTS: --with-crypto-impl=openssl
+            - compiler: gcc
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Preparation
+              run: |
+                sudo apt-get update -qq
+                sudo apt-get install -y bison dejagnu gettext keyutils ldap-utils libcmocka-dev libldap2-dev libkeyutils-dev libssl-dev python3-kdcproxy python3-pip slapd tcl-dev tcsh
+                pip3 install pyrad
+                sh -ex .travis-ci.sh
